@@ -9,6 +9,7 @@ import { setupSwagger } from "./config/swagger";
 import { corsMiddleware } from "./middlewares/corsMiddleware";
 import { authRouter } from "./features/auth/auth.router";
 import { usersRouter } from "./features/users/users.router";
+import { notesRouter } from "./features/notes/notes.router";
 
 const app = Express();
 
@@ -23,6 +24,7 @@ setupSwagger(app);
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", usersRouter);
+app.use("/api/v1/notes", notesRouter);
 
 app.use((req, res, next) => {
   next(new NotFoundError(req.originalUrl));
