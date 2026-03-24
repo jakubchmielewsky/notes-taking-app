@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "Note taking app",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jakubchmielewsky/notes-taking-app.git"
@@ -15,5 +12,14 @@
   "bugs": {
     "url": "https://github.com/jakubchmielewsky/notes-taking-app/issues"
   },
-  "homepage": "https://github.com/jakubchmielewsky/notes-taking-app#readme"
+  "homepage": "https://github.com/jakubchmielewsky/notes-taking-app#readme",
+  "workspaces": [
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "build:shared": "npm run build --workspace=packages/shared-types",
+    "dev:api": "npm run build:shared && npm run dev --workspace=services/api",
+    "dev:frontend": "npm run dev --workspace=services/frontend"
+  }
 }
