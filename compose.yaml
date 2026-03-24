@@ -2,12 +2,13 @@ services:
   mongo:
     image: mongo:8
     restart: always
-    ports: 27017:27017
+    ports: 
+     - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     volumes:
-      - mongo_data:/data/db
+      - db_data:/data/db
     networks:
       - app-net
     healthcheck:
@@ -15,8 +16,41 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  
+  api:
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+    ports:
+      - "${API_PORT}:8080"
+    environment:
+      # Application
+      NODE_ENV: ${NODE_ENV}
+      API_PORT: 8080
+      FRONTEND_URI: ${FRONTEND_URI}
+      # Infrastructure
+      MONGO_URI: ${MONGO_URI}
+      REDIS_URI: ${REDIS_URI}
+      # Auth
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_OAUTH_REDIRECT_URI: ${GOOGLE_OAUTH_REDIRECT_URI}
+      JWT_ACCESS_TOKEN_SECRET: ${JWT_ACCESS_TOKEN_SECRET}
+      JWT_ACCESS_TOKEN_EXPIRES_IN: ${JWT_ACCESS_TOKEN_EXPIRES_IN}
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
+      REFRESH_TOKEN_EXPIRES_IN: ${REFRESH_TOKEN_EXPIRES_IN}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - app-net
+
+
 volumes:
-  db-data:
+  db_data:
+
 networks:
   app-net:
     driver: bridge
