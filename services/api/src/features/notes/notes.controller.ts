@@ -63,7 +63,7 @@ export const createNoteHandler = async (
     newNoteData: { title, content, tags },
   });
 
-  return res.status(200).send(response);
+  return res.status(201).send(response);
 };
 
 export const updateNoteHandler = async (

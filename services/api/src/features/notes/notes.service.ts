@@ -178,7 +178,7 @@ export const restoreNote = async ({
 
   if (matchedCount === 0) {
     const exists = await NoteModel.exists({ _id: noteId, userId });
-    if (exists) throw new ConflictError("Note is already restored");
+    if (exists) throw new ConflictError("Note is not archived");
     throw new NotFoundError("Note");
   }
 

@@ -17,7 +17,7 @@ app.use(corsMiddleware);
 app.use(requestLogger);
 app.use(globalRateLimiter);
 app.use(helmet());
-app.use(Express.json({ limit: "10kb" }));
+app.use(Express.json({ limit: "500kb" }));
 app.use(cookieParser());
 
 setupSwagger(app);
