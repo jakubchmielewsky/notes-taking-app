@@ -1,12 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import { assertAuth } from "../auth/auth.guards";
 import {
+  archiveNote,
+  createNote,
   deleteNote,
   getNoteDetails,
   listNotes,
+  restoreNote,
   updateNote,
 } from "./notes.service";
 import {
+  createNoteRequestSchema,
   listNotesQuerySchema,
   NoteDetails,
   noteParamsSchema,
@@ -44,6 +48,24 @@ export const getNoteDetailsHandler = async (
   return res.status(200).send(response);
 };
 
+export const createNoteHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  assertAuth(req);
+
+  const { userId } = req;
+  const { title, content, tags } = createNoteRequestSchema.parse(req.body);
+
+  const response: NoteDetails = await createNote({
+    userId,
+    newNoteData: { title, content, tags },
+  });
+
+  return res.status(200).send(response);
+};
+
 export const updateNoteHandler = async (
   req: Request,
   res: Response,
@@ -75,6 +97,36 @@ export const deleteNoteHandler = async (
   const { noteId } = noteParamsSchema.parse(req.params);
 
   await deleteNote({ userId, noteId });
+
+  return res.status(204).send();
+};
+
+export const archiveNoteHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  assertAuth(req);
+
+  const { userId } = req;
+  const { noteId } = noteParamsSchema.parse(req.params);
+
+  await archiveNote({ userId, noteId });
+
+  return res.status(204).send();
+};
+
+export const restoreNoteHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  assertAuth(req);
+
+  const { userId } = req;
+  const { noteId } = noteParamsSchema.parse(req.params);
+
+  await restoreNote({ userId, noteId });
 
   return res.status(204).send();
 };

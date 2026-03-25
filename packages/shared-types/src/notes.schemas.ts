@@ -31,7 +31,14 @@ export const updateNoteRequestSchema = z.object({
   tags: z.array(z.string().min(1)).optional(),
 });
 
+export const createNoteRequestSchema = z.object({
+  title: z.string().min(1),
+  content: z.string(),
+  tags: z.array(z.string().min(1)),
+});
+
 export type ListNotesQuery = z.infer<typeof listNotesQuerySchema>;
 export type Notes = z.infer<typeof listNotesResponseSchema>;
 export type NoteDetails = z.infer<typeof noteDetailsResponseSchema>;
 export type UpdateNoteRequest = z.infer<typeof updateNoteRequestSchema>;
+export type CreateNoteRequest = z.infer<typeof createNoteRequestSchema>;

@@ -25,6 +25,12 @@ export class NotFoundError extends AppError {
   }
 }
 
+export class ConflictError extends AppError {
+  constructor(message: string) {
+    super(409, message);
+  }
+}
+
 export class NotImplementedError extends AppError {
   constructor(message = "Not implemented") {
     super(501, message);

@@ -1,7 +1,23 @@
 import { NoteModel } from "./notes.model";
 import { NoteDetails, Notes } from "@notes/shared-types";
-import { NotFoundError } from "../../utils/errors";
-import { NoteUpdates } from "./notes.types";
+import { ConflictError, NotFoundError } from "../../utils/errors";
+import { NewNoteData, NoteUpdates } from "./notes.types";
+
+const toNoteDetails = (note: {
+  _id: unknown;
+  title: string;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+  tags: string[];
+}): NoteDetails => ({
+  id: String(note._id),
+  title: note.title,
+  content: note.content,
+  createdAt: note.createdAt.toISOString(),
+  updatedAt: note.updatedAt.toISOString(),
+  tags: note.tags,
+});
 
 export const listNotes = async ({
   userId,
@@ -40,14 +56,19 @@ export const getNoteDetails = async ({
 
   if (!note) throw new NotFoundError("Note");
 
-  return {
-    id: note._id.toString(),
-    title: note.title,
-    content: note.content,
-    createdAt: note.createdAt.toISOString(),
-    updatedAt: note.updatedAt.toISOString(),
-    tags: note.tags,
-  };
+  return toNoteDetails(note);
+};
+
+export const createNote = async ({
+  newNoteData,
+  userId,
+}: {
+  newNoteData: NewNoteData;
+  userId: string;
+}) => {
+  const newNote = await NoteModel.create({ userId, ...newNoteData });
+
+  return toNoteDetails(newNote);
 };
 
 export const updateNote = async ({
@@ -68,14 +89,7 @@ export const updateNote = async ({
 
   if (!updatedNote) throw new NotFoundError("Note");
 
-  return {
-    id: updatedNote._id.toString(),
-    title: updatedNote.title,
-    content: updatedNote.content,
-    createdAt: updatedNote.createdAt.toISOString(),
-    updatedAt: updatedNote.updatedAt.toISOString(),
-    tags: updatedNote.tags,
-  };
+  return toNoteDetails(updatedNote);
 };
 
 export const deleteNote = async ({
@@ -85,9 +99,51 @@ export const deleteNote = async ({
   noteId: string;
   userId: string;
 }) => {
-  const deletedNote = await NoteModel.findOneAndDelete({ _id: noteId, userId });
+  const { deletedCount } = await NoteModel.deleteOne({ _id: noteId, userId });
 
-  if (!deletedNote) throw new NotFoundError("Note");
+  if (deletedCount === 0) throw new NotFoundError("Note");
+
+  return;
+};
+
+export const archiveNote = async ({
+  noteId,
+  userId,
+}: {
+  noteId: string;
+  userId: string;
+}) => {
+  const { matchedCount } = await NoteModel.updateOne(
+    { _id: noteId, userId, archivedAt: null },
+    { archivedAt: new Date() },
+  );
+
+  if (matchedCount === 0) {
+    const exists = await NoteModel.exists({ _id: noteId, userId });
+    if (exists) throw new ConflictError("Note is already archived");
+    throw new NotFoundError("Note");
+  }
+
+  return;
+};
+
+export const restoreNote = async ({
+  noteId,
+  userId,
+}: {
+  noteId: string;
+  userId: string;
+}) => {
+  const { matchedCount } = await NoteModel.updateOne(
+    { _id: noteId, userId, archivedAt: { $ne: null } },
+    { archivedAt: null },
+  );
+
+  if (matchedCount === 0) {
+    const exists = await NoteModel.exists({ _id: noteId, userId });
+    if (exists) throw new ConflictError("Note is already restored");
+    throw new NotFoundError("Note");
+  }
 
   return;
 };

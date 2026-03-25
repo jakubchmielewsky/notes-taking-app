@@ -100,6 +100,54 @@ Updates an existing note owned by the authenticated user.
 
 registry.registerPath({
   tags: ["Notes"],
+  method: "post",
+  path: "/api/v1/notes/{noteId}/archive",
+  summary: "Archive note",
+  description: `
+Archives a note owned by the authenticated user.
+
+- Returns 409 if the note is already archived
+`,
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: noteParamsSchema,
+  },
+  responses: {
+    204: {
+      description: "Note archived successfully",
+    },
+    409: {
+      description: "Note is already archived",
+    },
+  },
+});
+
+registry.registerPath({
+  tags: ["Notes"],
+  method: "post",
+  path: "/api/v1/notes/{noteId}/restore",
+  summary: "Restore note",
+  description: `
+Restores an archived note owned by the authenticated user.
+
+- Returns 409 if the note is not archived
+`,
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: noteParamsSchema,
+  },
+  responses: {
+    204: {
+      description: "Note restored successfully",
+    },
+    409: {
+      description: "Note is not archived",
+    },
+  },
+});
+
+registry.registerPath({
+  tags: ["Notes"],
   method: "delete",
   path: "/api/v1/notes/{noteId}",
   summary: "Delete note",
