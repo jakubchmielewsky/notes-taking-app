@@ -2,10 +2,14 @@ import { NoteModel } from "./notes.model";
 import { NoteDetails, Notes } from "@notes/shared-types";
 import { ConflictError, NotFoundError } from "../../utils/errors";
 import { NewNoteData, NoteUpdates } from "./notes.types";
+import { randomBytes } from "crypto";
+import { isDuplicateKeyError } from "../../utils/mongo";
+import { slugify } from "../../utils/slugify";
 
 const toNoteDetails = (note: {
   _id: unknown;
   title: string;
+  slug: string;
   content: string;
   createdAt: Date;
   updatedAt: Date;
@@ -13,6 +17,7 @@ const toNoteDetails = (note: {
 }): NoteDetails => ({
   id: String(note._id),
   title: note.title,
+  slug: note.slug,
   content: note.content,
   createdAt: note.createdAt.toISOString(),
   updatedAt: note.updatedAt.toISOString(),
@@ -30,13 +35,14 @@ export const listNotes = async ({
     userId,
     archivedAt: archived ? { $ne: null } : null,
   })
-    .select("_id title createdAt updatedAt tags")
+    .select("_id title slug createdAt updatedAt tags")
     .sort({ updatedAt: -1 })
     .lean();
 
-  return notes.map(({ _id, title, createdAt, updatedAt, tags }) => ({
+  return notes.map(({ _id, title, slug, createdAt, updatedAt, tags }) => ({
     id: _id.toString(),
     title,
+    slug,
     createdAt: createdAt.toISOString(),
     updatedAt: updatedAt.toISOString(),
     tags,
@@ -51,7 +57,7 @@ export const getNoteDetails = async ({
   userId: string;
 }): Promise<NoteDetails> => {
   const note = await NoteModel.findOne({ _id: noteId, userId })
-    .select("_id title content createdAt updatedAt tags")
+    .select("_id title slug content createdAt updatedAt tags")
     .lean();
 
   if (!note) throw new NotFoundError("Note");
@@ -66,9 +72,26 @@ export const createNote = async ({
   newNoteData: NewNoteData;
   userId: string;
 }) => {
-  const newNote = await NoteModel.create({ userId, ...newNoteData });
+  const baseSlug = slugify(newNoteData.title);
 
-  return toNoteDetails(newNote);
+  try {
+    const newNote = await NoteModel.create({
+      userId,
+      slug: baseSlug,
+      ...newNoteData,
+    });
+    return toNoteDetails(newNote);
+  } catch (error) {
+    if (!isDuplicateKeyError(error, "slug")) throw error;
+
+    const suffix = randomBytes(3).toString("hex");
+    const newNote = await NoteModel.create({
+      userId,
+      slug: `${baseSlug}-${suffix}`,
+      ...newNoteData,
+    });
+    return toNoteDetails(newNote);
+  }
 };
 
 export const updateNote = async ({
@@ -80,16 +103,30 @@ export const updateNote = async ({
   noteId: string;
   userId: string;
 }) => {
-  const updatedNote = await NoteModel.findOneAndUpdate(
-    { _id: noteId, userId },
-    updates,
-  )
-    .select("_id title content createdAt updatedAt tags")
-    .lean();
+  const baseSlug = updates.title ? slugify(updates.title) : undefined;
 
-  if (!updatedNote) throw new NotFoundError("Note");
+  const performUpdate = async (slug?: string) => {
+    const updatedNote = await NoteModel.findOneAndUpdate(
+      { _id: noteId, userId },
+      { ...updates, ...(slug && { slug }) },
+      { new: true },
+    )
+      .select("_id title slug content createdAt updatedAt tags")
+      .lean();
 
-  return toNoteDetails(updatedNote);
+    if (!updatedNote) throw new NotFoundError("Note");
+
+    return toNoteDetails(updatedNote);
+  };
+
+  try {
+    return await performUpdate(baseSlug);
+  } catch (error) {
+    if (!baseSlug || !isDuplicateKeyError(error, "slug")) throw error;
+
+    const suffix = randomBytes(3).toString("hex");
+    return await performUpdate(`${baseSlug}-${suffix}`);
+  }
 };
 
 export const deleteNote = async ({

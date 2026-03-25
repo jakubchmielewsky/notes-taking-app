@@ -1,5 +1,6 @@
 import { registry } from "../../config/openapi";
 import {
+  createNoteRequestSchema,
   listNotesQuerySchema,
   listNotesResponseSchema,
   noteDetailsResponseSchema,
@@ -34,6 +35,38 @@ Returns a list of notes for the authenticated user.
     },
     401: {
       description: "Unauthorized",
+    },
+  },
+});
+
+registry.registerPath({
+  tags: ["Notes"],
+  method: "post",
+  path: "/api/v1/notes",
+  summary: "Create note",
+  description: `
+Creates a new note for the authenticated user.
+
+- Slug is auto-generated from the title
+`,
+  security: [{ bearerAuth: [] }],
+  request: {
+    body: {
+      content: {
+        "application/json": {
+          schema: createNoteRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: "Created note details",
+      content: {
+        "application/json": {
+          schema: noteDetailsResponseSchema,
+        },
+      },
     },
   },
 });

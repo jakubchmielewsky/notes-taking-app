@@ -3,6 +3,7 @@ import { z } from "./zod";
 const noteBaseSchema = z.object({
   id: z.string(),
   title: z.string(),
+  slug: z.string(),
   tags: z.array(z.string()),
   updatedAt: z.iso.datetime(),
   createdAt: z.iso.datetime(),

@@ -13,6 +13,10 @@ export const noteSchema = new Schema(
       trim: true,
       maxlength: 200,
     },
+    slug: {
+      type: String,
+      required: true,
+    },
     content: {
       type: String,
       required: true,
@@ -32,5 +36,6 @@ export const noteSchema = new Schema(
 );
 
 noteSchema.index({ userId: 1, archivedAt: 1, updatedAt: -1 });
+noteSchema.index({ userId: 1, slug: 1 }, { unique: true });
 
 export const NoteModel = model("Note", noteSchema);
