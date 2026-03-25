@@ -97,3 +97,22 @@ Updates an existing note owned by the authenticated user.
     },
   },
 });
+
+registry.registerPath({
+  tags: ["Notes"],
+  method: "delete",
+  path: "/api/v1/notes/{noteId}",
+  summary: "Delete note",
+  description: `
+Deletes a note owned by the authenticated user.
+`,
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: noteParamsSchema,
+  },
+  responses: {
+    204: {
+      description: "Note deleted successfully",
+    },
+  },
+});

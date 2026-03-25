@@ -1,6 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import { assertAuth } from "../auth/auth.guards";
-import { getNoteDetails, listNotes, updateNote } from "./notes.service";
+import {
+  deleteNote,
+  getNoteDetails,
+  listNotes,
+  updateNote,
+} from "./notes.service";
 import {
   listNotesQuerySchema,
   NoteDetails,
@@ -57,4 +62,19 @@ export const updateNoteHandler = async (
   });
 
   return res.status(200).send(response);
+};
+
+export const deleteNoteHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  assertAuth(req);
+
+  const { userId } = req;
+  const { noteId } = noteParamsSchema.parse(req.params);
+
+  await deleteNote({ userId, noteId });
+
+  return res.status(204).send();
 };

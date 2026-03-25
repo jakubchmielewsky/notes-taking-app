@@ -77,3 +77,17 @@ export const updateNote = async ({
     tags: updatedNote.tags,
   };
 };
+
+export const deleteNote = async ({
+  noteId,
+  userId,
+}: {
+  noteId: string;
+  userId: string;
+}) => {
+  const deletedNote = await NoteModel.findOneAndDelete({ _id: noteId, userId });
+
+  if (!deletedNote) throw new NotFoundError("Note");
+
+  return;
+};
