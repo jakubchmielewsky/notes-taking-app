@@ -25,6 +25,13 @@ export const listNotesQuerySchema = z.object({
     .transform((v) => v === "true"),
 });
 
+export const updateNoteRequestSchema = z.object({
+  title: z.string().min(1).optional(),
+  content: z.string().optional(),
+  tags: z.array(z.string().min(1)).optional(),
+});
+
 export type ListNotesQuery = z.infer<typeof listNotesQuerySchema>;
 export type Notes = z.infer<typeof listNotesResponseSchema>;
 export type NoteDetails = z.infer<typeof noteDetailsResponseSchema>;
+export type UpdateNoteRequest = z.infer<typeof updateNoteRequestSchema>;

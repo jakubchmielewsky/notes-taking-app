@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-const noteSchema = new Schema(
+export const noteSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,

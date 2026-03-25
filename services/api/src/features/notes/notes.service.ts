@@ -1,6 +1,7 @@
 import { NoteModel } from "./notes.model";
 import { NoteDetails, Notes } from "@notes/shared-types";
 import { NotFoundError } from "../../utils/errors";
+import { NoteUpdates } from "./notes.types";
 
 export const listNotes = async ({
   userId,
@@ -26,7 +27,7 @@ export const listNotes = async ({
   }));
 };
 
-export const getNoteById = async ({
+export const getNoteDetails = async ({
   noteId,
   userId,
 }: {
@@ -46,5 +47,33 @@ export const getNoteById = async ({
     createdAt: note.createdAt.toISOString(),
     updatedAt: note.updatedAt.toISOString(),
     tags: note.tags,
+  };
+};
+
+export const updateNote = async ({
+  updates,
+  noteId,
+  userId,
+}: {
+  updates: NoteUpdates;
+  noteId: string;
+  userId: string;
+}) => {
+  const updatedNote = await NoteModel.findOneAndUpdate(
+    { _id: noteId, userId },
+    updates,
+  )
+    .select("_id title content createdAt updatedAt tags")
+    .lean();
+
+  if (!updatedNote) throw new NotFoundError("Note");
+
+  return {
+    id: updatedNote._id.toString(),
+    title: updatedNote.title,
+    content: updatedNote.content,
+    createdAt: updatedNote.createdAt.toISOString(),
+    updatedAt: updatedNote.updatedAt.toISOString(),
+    tags: updatedNote.tags,
   };
 };

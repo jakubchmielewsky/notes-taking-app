@@ -4,6 +4,7 @@ import {
   listNotesResponseSchema,
   noteDetailsResponseSchema,
   noteParamsSchema,
+  updateNoteRequestSchema,
 } from "@notes/shared-types";
 
 registry.registerPath({
@@ -54,6 +55,40 @@ Returns the full details of a single note, including content.
   responses: {
     200: {
       description: "Note details",
+      content: {
+        "application/json": {
+          schema: noteDetailsResponseSchema,
+        },
+      },
+    },
+  },
+});
+
+registry.registerPath({
+  tags: ["Notes"],
+  method: "patch",
+  path: "/api/v1/notes/{noteId}",
+  summary: "Update note",
+  description: `
+Updates an existing note owned by the authenticated user.
+
+- All fields are optional — only provided fields are updated
+- Returns the full updated note details
+`,
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: noteParamsSchema,
+    body: {
+      content: {
+        "application/json": {
+          schema: updateNoteRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "Updated note details",
       content: {
         "application/json": {
           schema: noteDetailsResponseSchema,
