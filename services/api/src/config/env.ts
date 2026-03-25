@@ -1,5 +1,7 @@
 import z from "zod";
-import { processLogger } from "./logger";
+import { createModuleLogger } from "./logger";
+
+const processLogger = createModuleLogger("process");
 
 const EnvSchema = z.object({
   // Application

@@ -1,5 +1,7 @@
 import { env } from "./config/env";
-import { processLogger } from "./config/logger";
+import { createModuleLogger } from "./config/logger";
+
+const processLogger = createModuleLogger("process");
 
 process.on("uncaughtException", (err) => {
   processLogger.fatal({ err }, "Uncaught exception - shutting down");

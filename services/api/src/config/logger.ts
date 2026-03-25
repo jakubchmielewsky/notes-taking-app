@@ -50,5 +50,3 @@ export const createWorkerLogger = (worker: string, queue?: string) =>
     ...(queue ? { queue } : {}),
   });
 
-export const dbLogger = createIntegrationLogger("mongo");
-export const processLogger = createModuleLogger("process");
