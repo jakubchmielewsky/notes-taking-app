@@ -5,6 +5,7 @@ import { NewNoteData, NoteUpdates } from "./notes.types";
 import { randomBytes } from "crypto";
 import { isDuplicateKeyError } from "../../utils/mongo";
 import { slugify } from "../../utils/slugify";
+import { notesLogger } from "./notes.logger";
 
 const toNoteDetails = (note: {
   _id: unknown;
@@ -80,16 +81,20 @@ export const createNote = async ({
       slug: baseSlug,
       ...newNoteData,
     });
+    notesLogger.info({ userId, slug: baseSlug }, "Note created");
     return toNoteDetails(newNote);
   } catch (error) {
     if (!isDuplicateKeyError(error, "slug")) throw error;
 
     const suffix = randomBytes(3).toString("hex");
+    const slug = `${baseSlug}-${suffix}`;
+    notesLogger.warn({ userId, baseSlug, slug }, "Slug collision, retrying with suffix");
     const newNote = await NoteModel.create({
       userId,
-      slug: `${baseSlug}-${suffix}`,
+      slug,
       ...newNoteData,
     });
+    notesLogger.info({ userId, slug }, "Note created");
     return toNoteDetails(newNote);
   }
 };
@@ -125,7 +130,9 @@ export const updateNote = async ({
     if (!baseSlug || !isDuplicateKeyError(error, "slug")) throw error;
 
     const suffix = randomBytes(3).toString("hex");
-    return await performUpdate(`${baseSlug}-${suffix}`);
+    const slug = `${baseSlug}-${suffix}`;
+    notesLogger.warn({ userId, noteId, baseSlug, slug }, "Slug collision on update, retrying with suffix");
+    return await performUpdate(slug);
   }
 };
 
@@ -139,6 +146,8 @@ export const deleteNote = async ({
   const { deletedCount } = await NoteModel.deleteOne({ _id: noteId, userId });
 
   if (deletedCount === 0) throw new NotFoundError("Note");
+
+  notesLogger.info({ userId, noteId }, "Note deleted");
 
   return;
 };
