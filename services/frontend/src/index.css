@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Fonts */
+  --font-inter: 'Inter', sans-serif;
+  --font-noto-serif: 'Noto Serif', serif;
+  --font-source-code-pro: 'Source Code Pro', monospace;
+
+  /* Colors */
+  --color-neutral-950: #0E121B;
+  --color-neutral-900: #191B25;
+  --color-neutral-800: #232530;
+  --color-neutral-700: #2B303B;
+  --color-neutral-600: #525866;
+  --color-neutral-500: #717784;
+  --color-neutral-400: #99A0AE;
+  --color-neutral-300: #CACFD8;
+  --color-neutral-200: #E0E4EA;
+  --color-neutral-100: #F3F5F8;
+  --color-neutral-50: #F5F7FA;
+  --color-neutral-0: #FFFFFF;
+
+  --color-blue-700: #2547D0;
+  --color-blue-500: #335CFF;
+  --color-blue-50: #EBF1FF;
+
+  --color-green-500: #21C16B;
+  --color-green-100: #D1FBE9;
+
+  --color-red-500: #FB3748;
+  --color-red-100: #FFD5D8;
+
+  /* Font size presets */
+  --text-preset-1: 24px;
+  --text-preset-1--line-height: 120%;
+  --text-preset-1--letter-spacing: -0.5px;
+
+  --text-preset-2: 20px;
+  --text-preset-2--line-height: 120%;
+  --text-preset-2--letter-spacing: -0.5px;
+
+  --text-preset-3: 16px;
+  --text-preset-3--line-height: 120%;
+  --text-preset-3--letter-spacing: -0.3px;
+
+  --text-preset-4: 14px;
+  --text-preset-4--line-height: 120%;
+  --text-preset-4--letter-spacing: -0.2px;
+
+  --text-preset-5: 14px;
+  --text-preset-5--line-height: 120%;
+  --text-preset-5--letter-spacing: -0.2px;
+
+  --text-preset-6: 12px;
+  --text-preset-6--line-height: 120%;
+  --text-preset-6--letter-spacing: -0.2px;
+
+  /* Spacing */
+  --spacing-025: 2px;
+  --spacing-050: 4px;
+  --spacing-075: 6px;
+  --spacing-100: 8px;
+  --spacing-150: 12px;
+  --spacing-200: 16px;
+  --spacing-250: 20px;
+  --spacing-300: 24px;
+  --spacing-400: 32px;
+  --spacing-500: 40px;
+  --spacing-600: 48px;
+  --spacing-800: 64px;
+  --spacing-1000: 80px;
+
+  /* Border radius */
+  --radius-4: 4px;
+  --radius-6: 6px;
+  --radius-8: 8px;
+  --radius-10: 10px;
+  --radius-12: 12px;
+  --radius-16: 16px;
+  --radius-20: 20px;
+  --radius-24: 24px;
+
+  /* Breakpoints */
+  --breakpoint-tablet: 540px;
+  --breakpoint-desktop: 1025px;
+
+  /* Shadows */
+  --shadow-top: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+
+  /* Animations */
+  --animate-notification: notificationAnimation 3s linear;
+
+  @keyframes notificationAnimation {
+    0% { opacity: 0; transform: translate(130%, 100%); }
+    5% { opacity: 0; transform: translate(130%, 0); }
+    15% { opacity: 1; transform: translate(0, 0); }
+    95% { opacity: 1; transform: translate(0, 0); }
+    100% { opacity: 0; transform: translate(0, 0); }
+  }
+}
+
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: var(--color-neutral-0);
+  color: var(--color-neutral-950);
+  font-family: var(--font-inter);
+}
+
+.dark body {
+  background: var(--color-neutral-950);
+  color: var(--color-neutral-0);
+}
+
+.font-serif body {
+  font-family: var(--font-noto-serif);
+}
+
+.font-mono body {
+  font-family: var(--font-source-code-pro);
+}
+
+#root {
+  min-height: 100svh;
+}
