@@ -8,7 +8,7 @@ export interface Notification {
 
 interface NotificationsState {
   notifications: Notification[];
-  addNotification: (notification: Notification) => void;
+  addNotification: (notification: Omit<Notification, "id">) => void;
   removeNotification: (id: string) => void;
 }
 
@@ -16,7 +16,12 @@ export const useNotificationsStore = create<NotificationsState>((set) => ({
   notifications: [],
 
   addNotification: (notification) =>
-    set((state) => ({ notifications: [...state.notifications, notification] })),
+    set((state) => ({
+      notifications: [
+        ...state.notifications,
+        { ...notification, id: crypto.randomUUID() },
+      ],
+    })),
 
   removeNotification: (id) =>
     set((state) => ({

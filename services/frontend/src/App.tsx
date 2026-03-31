@@ -48,14 +48,18 @@ function AuthGate() {
     if (calledRef.current) return;
     calledRef.current = true;
 
-    authApi
-      .refresh()
-      .then(({ data }) => {
-        setToken(data.accessToken);
-        return usersApi.me();
-      })
-      .then(({ data }) => setUser(data))
-      .catch(() => logout());
+    const initAuth = async () => {
+      try {
+        const { data: tokenData } = await authApi.refresh();
+        setToken(tokenData.accessToken);
+        const { data: userData } = await usersApi.me();
+        setUser(userData);
+      } catch {
+        logout();
+      }
+    };
+
+    initAuth();
   }, [setToken, setUser, logout]);
 
   if (status === "loading") return <Loading />;

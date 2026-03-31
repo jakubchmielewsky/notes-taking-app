@@ -1,4 +1,4 @@
-import LogoIcon from "@/assets/icons/logo.svg?react";
+import LogoIcon from "@/assets/logo.svg?react";
 
 const MobileHeader: React.FC = () => {
   return (

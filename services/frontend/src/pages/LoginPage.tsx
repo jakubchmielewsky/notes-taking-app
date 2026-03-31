@@ -1,4 +1,4 @@
-import LogoIcon from "@/assets/icons/logo.svg?react";
+import LogoIcon from "@/assets/logo.svg?react";
 import GoogleIcon from "@/assets/icons/icon-google.svg?react";
 
 export default function LoginPage() {

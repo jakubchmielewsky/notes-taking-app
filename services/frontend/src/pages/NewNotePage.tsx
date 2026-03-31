@@ -25,13 +25,9 @@ const NewNotePage: React.FC = () => {
       {
         onSuccess: () => {
           navigate("/home");
-          addNotification({
-            id: crypto.randomUUID(),
-            message: "Note successfully added.",
-            type: "success",
-          });
+          addNotification({ message: "Note successfully added.", type: "success" });
         },
-      }
+      },
     );
   };
 
@@ -52,7 +48,9 @@ const NewNotePage: React.FC = () => {
           className="text-[24px] font-bold bg-transparent outline-none placeholder-neutral-950 dark:placeholder-white"
           placeholder="Enter a Title..."
           value={inputs.title}
-          onChange={(e) => setInputs({ ...inputs, title: e.currentTarget.value })}
+          onChange={(e) =>
+            setInputs({ ...inputs, title: e.currentTarget.value })
+          }
         />
         <div className="grid grid-cols-2 text-[12px]">
           <label className="flex gap-075 items-center py-050 text-neutral-600 dark:text-neutral-400">
@@ -63,12 +61,16 @@ const NewNotePage: React.FC = () => {
             type="text"
             placeholder="Add tags separated by commas"
             value={inputs.tags}
-            onChange={(e) => setInputs({ ...inputs, tags: e.currentTarget.value })}
+            onChange={(e) =>
+              setInputs({ ...inputs, tags: e.currentTarget.value })
+            }
           />
           <label className="flex gap-075 items-center py-050 text-neutral-600 dark:text-neutral-400">
             <ClockIcon className="h-200 w-200" /> Last edited
           </label>
-          <p className="flex items-center py-050 text-neutral-400">Not yet saved</p>
+          <p className="flex items-center py-050 text-neutral-400">
+            Not yet saved
+          </p>
         </div>
         <div className="border-t border-neutral-200 dark:border-neutral-800" />
         <div className="grow">
@@ -76,7 +78,9 @@ const NewNotePage: React.FC = () => {
             className="h-full w-full bg-transparent outline-none resize-none text-[14px]"
             placeholder="Start typing your note here…"
             value={inputs.content}
-            onChange={(e) => setInputs({ ...inputs, content: e.currentTarget.value })}
+            onChange={(e) =>
+              setInputs({ ...inputs, content: e.currentTarget.value })
+            }
           />
         </div>
 

@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { notesApi } from "@/api/endpoints";
 import type { CreateNoteRequest, UpdateNoteRequest } from "@notes/shared-types";
+import { useNotificationsStore } from "@/stores/notificationsStore";
+
+function notifyError(message: string) {
+  useNotificationsStore.getState().addNotification({ message, type: "error" });
+}
 
 export const notesKeys = {
   all: ["notes"] as const,
@@ -36,6 +41,7 @@ export function useCreateNote() {
     mutationFn: (body: CreateNoteRequest) =>
       notesApi.create(body).then((r) => r.data),
     onSuccess: () => qc.invalidateQueries({ queryKey: notesKeys.all }),
+    onError: () => notifyError("Failed to create note."),
   });
 }
 
@@ -49,6 +55,7 @@ export function useUpdateNote(noteId: string) {
       qc.invalidateQueries({ queryKey: notesKeys.archived });
       qc.invalidateQueries({ queryKey: notesKeys.detail(noteId) });
     },
+    onError: () => notifyError("Failed to save note."),
   });
 }
 
@@ -61,6 +68,7 @@ export function useArchiveNote() {
       qc.invalidateQueries({ queryKey: notesKeys.all });
       qc.invalidateQueries({ queryKey: notesKeys.archived });
     },
+    onError: () => notifyError("Failed to archive note."),
   });
 }
 
@@ -73,6 +81,7 @@ export function useRestoreNote() {
       qc.invalidateQueries({ queryKey: notesKeys.all });
       qc.invalidateQueries({ queryKey: notesKeys.archived });
     },
+    onError: () => notifyError("Failed to restore note."),
   });
 }
 
@@ -84,5 +93,6 @@ export function useDeleteNote() {
       qc.invalidateQueries({ queryKey: notesKeys.all });
       qc.invalidateQueries({ queryKey: notesKeys.archived });
     },
+    onError: () => notifyError("Failed to delete note."),
   });
 }

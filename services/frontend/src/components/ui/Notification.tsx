@@ -8,6 +8,12 @@ interface Props {
   duration: number;
 }
 
+const iconClass: Record<Notification["type"], string> = {
+  success: "text-green-500",
+  error: "text-red-500",
+  info: "text-blue-500",
+};
+
 const NotificationItem: React.FC<Props> = ({ notification, duration }) => {
   const { removeNotification } = useNotificationsStore();
 
@@ -25,7 +31,11 @@ const NotificationItem: React.FC<Props> = ({ notification, duration }) => {
       style={{ animation: `notificationAnimation ${duration / 1000}s linear` }}
     >
       <div className="flex gap-100">
-        <CheckmarkIcon className="text-green-500 shrink-0" />
+        {notification.type === "error" ? (
+          <CrossIcon className={`shrink-0 ${iconClass.error}`} />
+        ) : (
+          <CheckmarkIcon className={`shrink-0 ${iconClass[notification.type]}`} />
+        )}
         <p className="text-neutral-950 dark:text-white text-[14px]">
           {notification.message}
         </p>

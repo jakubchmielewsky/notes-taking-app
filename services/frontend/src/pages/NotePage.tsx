@@ -9,6 +9,7 @@ import {
   useRestoreNote,
   useDeleteNote,
 } from "@/hooks/useNotes";
+import Loading from "@/components/ui/Loading";
 import RightMenu from "@/components/desktop/RightMenu";
 import MobileHeaderControls from "@/components/mobile/MobileHeaderControls";
 import Modal from "@/components/ui/Modal";
@@ -39,8 +40,8 @@ const closedModal: ModalState = {
 const NotePage: React.FC = () => {
   const { noteId } = useParams<{ noteId: string }>();
   const navigate = useNavigate();
-  const { data: notesData = [] } = useNotes();
-  const { data: archivedData = [] } = useArchivedNotes();
+  const { data: notesData = [], isLoading: loadingNotes } = useNotes();
+  const { data: archivedData = [], isLoading: loadingArchived } = useArchivedNotes();
   const { addNotification } = useNotificationsStore();
 
   const allNotes = [...notesData, ...archivedData];
@@ -66,10 +67,11 @@ const NotePage: React.FC = () => {
     }
   }, [details]);
 
+  if (loadingNotes || loadingArchived) return <Loading />;
   if (!note) return <Navigate to="/home" />;
 
   const notify = (message: string) =>
-    addNotification({ id: crypto.randomUUID(), message, type: "success" });
+    addNotification({ message, type: "success" });
 
   const isArchived = !notesData.find((n) => n.id === noteId);
 

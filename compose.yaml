@@ -17,6 +17,17 @@ services:
       timeout: 5s
       retries: 5
   
+  frontend:
+    build:
+      context: .
+      dockerfile: services/frontend/Dockerfile
+    ports:
+      - "${FRONTEND_PORT}:80"
+    depends_on:
+      - api
+    networks:
+      - app-net
+
   api:
     build:
       context: .

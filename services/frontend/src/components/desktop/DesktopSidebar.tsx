@@ -1,4 +1,4 @@
-import LogoIcon from "@/assets/icons/logo.svg?react";
+import LogoIcon from "@/assets/logo.svg?react";
 import HomeIcon from "@/assets/icons/icon-home.svg?react";
 import ArchiveIcon from "@/assets/icons/icon-archive.svg?react";
 import TagIcon from "@/assets/icons/icon-tag.svg?react";
